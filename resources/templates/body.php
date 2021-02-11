@@ -1,18 +1,3 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="../css/main.css">
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-    <title>Pokedex</title>
-</head>
-<body>
-
-
 <div class="pokedex">
     <div class="left-container" id="left-container__cosmetics">
         <div class="left-container__top-section">
@@ -105,7 +90,3 @@
         </div>
     </div>
 </div>
-<script src="../js/pokedex.js"></script>
-<script src="../js/cosmetics.js"></script>
-</body>
-</html>

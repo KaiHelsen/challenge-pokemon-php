@@ -10,7 +10,7 @@ body {
     font-family: 'Press Start 2P', sans-serif;
     font-size: 10px;
     justify-content: center;
-    background-image: url('backgroundPicture.jpg');
+    background-image: url('../img/backgroundPicture.jpg');
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-size: cover;
