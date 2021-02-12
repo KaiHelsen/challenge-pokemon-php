@@ -1,3 +1,7 @@
+<?php
+include("./resources/library/pokeDex.php");
+?>
+
 <div class="pokedex">
     <div class="left-container" id="left-container__cosmetics">
         <div class="left-container__top-section">
@@ -14,11 +18,11 @@
                     <div class="main-section__black">
                         <div class="main-screen hide">
                             <div class="screen__header">
-                                <span class="poke-name" id="poke-display__name">Test</span>
-                                <span class="poke-id" id="poke-display__id">01</span>
+                                <span class="poke-name" id="poke-display__name"><?php echo $currentPokemon->name;?></span>
+                                <span class="poke-id" id="poke-display__id"><?php echo $currentPokemon->id;?></span>
                             </div>
                             <div class="screen__image">
-                                <img src="" class="poke-front-image" alt="front" id="poke-display__img__front"></div>
+                                <img src="<?php echo $currentPokemon->getFrontSprite()?>" class="poke-front-image" alt="front" id="poke-display__img__front"></div>
                             <div class="screen__description">
                                 <div class="stats__types">
                                     <span class="poke-type-one" id="poke__type__one"></span>
@@ -26,10 +30,10 @@
                                 </div>
                                 <div class="screen__stats">
                                     <p class="stats__weight">
-                                        weight: <span class="poke-weight" id="poke-display__weight"></span>
+                                        weight: <span class="poke-weight" id="poke-display__weight"><?php echo $currentPokemon->weight;?></span>
                                     </p>
                                     <p class="stats__height">
-                                        height: <span class="poke-height" id="poke-display__height"></span>
+                                        height: <span class="poke-height" id="poke-display__height"><?php echo $currentPokemon->height;?></span>
                                     </p>
                                 </div>
                             </div>
@@ -65,27 +69,27 @@
     </div>
     <div class="right-container" id="right-container__cosmetics">
         <div class="right-container__black">
-            <div class="searchbox">
+            <form action="/index.php" method="get" class="searchbox" id="pokeForm">
                 <label for="pokemon-name">Pokemon Name</label><br>
-                <input type="text" id="pokemon-name"><br>
-            </div>
+                <input type="text" name="q" id="pokemon-name" value="<?php echo $currentPokemon->name;?>"><br>
+            </form>
             <div class="movesBox">
                 <label for="moves-table">Moves</label>
                 <table id="moves-table">
                     <tr>
-                        <td class="move">move 1</td>
-                        <td class="move">move 2</td>
+                        <td class="move"><?php echo $myMoves[0] ?></td>
+                        <td class="move"><?php echo $myMoves[1] ?></td>
                     </tr>
                     <tr>
-                        <td class="move">move 3</td>
-                        <td class="move">move 4</td>
+                        <td class="move"><?php echo $myMoves[2] ?></td>
+                        <td class="move"><?php echo $myMoves[3] ?></td>
                     </tr>
                 </table>
             </div>
         </div>
 
         <div class="right-container__buttons">
-            <div class="left-button" id="search-button">Search</div>
+            <input type="submit" form="pokeForm" class="left-button" id="search-button">
             <div class="right-button" id="reset-button">Reset</div>
         </div>
     </div>
