@@ -18,11 +18,14 @@ include("./resources/library/pokeDex.php");
                     <div class="main-section__black">
                         <div class="main-screen hide">
                             <div class="screen__header">
-                                <span class="poke-name" id="poke-display__name"><?php echo $currentPokemon->name;?></span>
-                                <span class="poke-id" id="poke-display__id"><?php echo $currentPokemon->id;?></span>
+                                <span class="poke-name"
+                                      id="poke-display__name"><?php echo $currentPokemon->name; ?></span>
+                                <span class="poke-id" id="poke-display__id"><?php echo $currentPokemon->id; ?></span>
                             </div>
                             <div class="screen__image">
-                                <img src="<?php echo $currentPokemon->getFrontSprite()?>" class="poke-front-image" alt="front" id="poke-display__img__front"></div>
+                                <img src="<?php $url = $currentPokemon->getOfficialArtUrl();
+                                echo !empty($url) ? $url : "" ?>" class="poke-front-image" alt="front"
+                                     id="poke-display__img__front"></div>
                             <div class="screen__description">
                                 <div class="stats__types">
                                     <span class="poke-type-one" id="poke__type__one"></span>
@@ -30,19 +33,27 @@ include("./resources/library/pokeDex.php");
                                 </div>
                                 <div class="screen__stats">
                                     <p class="stats__weight">
-                                        weight: <span class="poke-weight" id="poke-display__weight"><?php echo $currentPokemon->weight;?></span>
+                                        weight: <span class="poke-weight"
+                                                      id="poke-display__weight"><?php echo $currentPokemon->weight; ?></span>
                                     </p>
                                     <p class="stats__height">
-                                        height: <span class="poke-height" id="poke-display__height"><?php echo $currentPokemon->height;?></span>
+                                        height: <span class="poke-height"
+                                                      id="poke-display__height"><?php echo $currentPokemon->height; ?></span>
                                     </p>
                                 </div>
                             </div>
                             <div class="screen__evolutions">
-                                <img src="" class="poke-front-sprite" alt="evolution_1" id="poke-display__img__sprite_stage1">
+                                <img src="<?php
+                                echo isset($evolutionArray[0]) ? $evolutionArray[0][0]->getFrontSprite() : ''; ?>"
+                                     class="poke-front-sprite" alt="evolution_1" id="poke-display__img__sprite_stage1">
                                 <span class="poke-arrow" id="evo_arrow_1"> > </span>
-                                <img src="" class="poke-front-sprite" alt="evolution_1" id="poke-display__img__sprite_stage2">
+                                <img src="<?php
+                                echo isset($evolutionArray[1]) ? $evolutionArray[1][0]->getFrontSprite() : ''; ?>"
+                                     class="poke-front-sprite" alt="evolution_1" id="poke-display__img__sprite_stage2">
                                 <span class="poke-arrow" id="evo_arrow_2"> > </span>
-                                <img src="" class="poke-front-sprite" alt="evolution_1" id="poke-display__img__sprite_stage3">
+                                <img src="<?php
+                                echo isset($evolutionArray[2]) ? $evolutionArray[2][0]->getFrontSprite() : ''; ?>"
+                                     class="poke-front-sprite" alt="evolution_1" id="poke-display__img__sprite_stage3">
                             </div>
                         </div>
                     </div>
@@ -55,15 +66,19 @@ include("./resources/library/pokeDex.php");
                         <div class="d-pad__cell right"></div>
                         <div class="d-pad__cell bottom"></div>
                     </div>
-                    <div class="controllers__buttons">
-                        <div class="buttons__button" id="button-B">B</div>
-                        <div class="buttons__button" id="button-A">A</div>
-                    </div>
+                    <form method="get" class="controllers__buttons">
+                        <button type="submit" name="q" value='<?php echo $currentPokemon->id - 1; ?>'
+                                class="buttons__button" id="button-B">B
+                        </button>
+                        <button type="submit" name="q" value='<?php echo $currentPokemon->id + 1; ?>'
+                                class="buttons__button" id="button-A">A
+                        </button>
+                    </form>
                 </div>
             </div>
             <div class="left-container__right">
-                <div class="left-container__hinge" id = "left-container__hinge-top"></div>
-                <div class="left-container__hinge" id = "left-container__hinge-bottom"></div>
+                <div class="left-container__hinge" id="left-container__hinge-top"></div>
+                <div class="left-container__hinge" id="left-container__hinge-bottom"></div>
             </div>
         </div>
     </div>
@@ -71,7 +86,7 @@ include("./resources/library/pokeDex.php");
         <div class="right-container__black">
             <form action="/index.php" method="get" class="searchbox" id="pokeForm">
                 <label for="pokemon-name">Pokemon Name</label><br>
-                <input type="text" name="q" id="pokemon-name" value="<?php echo $currentPokemon->name;?>"><br>
+                <input type="text" name="q" id="pokemon-name" value="<?php echo $currentPokemon->name; ?>"><br>
             </form>
             <div class="movesBox">
                 <label for="moves-table">Moves</label>

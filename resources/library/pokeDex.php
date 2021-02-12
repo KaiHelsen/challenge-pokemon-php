@@ -6,11 +6,12 @@ const MAX_POKEMON = 898;
 const POKEAPI_REF = 'https://pokeapi.co/api/v2';
 
 $currentPokemon = null;
+$evolutionArray = null;
 
 
 class Pokemon
 {
-    public string $name = 'myName';
+    public string $name;
     public int $id = 0;
 
     public array $moves = [];
@@ -19,38 +20,45 @@ class Pokemon
     public int $height = 0;
     public int $weight = 0;
 
-    function __construct($pokemonApi)
+    function __construct(string $name = '', int $id = 0, array $moves = [], array $sprites = [], int $height = 0, int $weight = 0)
     {
-        //get all relevant information from the API
-        $this->name = $pokemonApi['name'];
-        $this->id = $pokemonApi['id'];
+        $this->name = $name;
+        $this->id = $id;
+        $this->moves = $moves;
+        $this->sprites = $sprites;
+        $this->height = $height;
+        $this->weight = $weight;
+    }
+    static function fetchPokemon($query): Pokemon
+    {
+        $data = file_get_contents(POKEAPI_REF . '/pokemon/' . $query);
+        $data = json_decode($data, true);
 
-        for ($i = 0; $i < count($pokemonApi['moves']); $i++) {
-            array_push($this->moves, $pokemonApi['moves'][$i]['move']['name']);
-        }
-
-        $this->sprites = $pokemonApi['sprites'];
-
-        $this->height = $pokemonApi['height'];
-        $this->weight = $pokemonApi['weight'];
+        return new Pokemon($data['name'], $data['id'], $data['moves'],$data['sprites'], $data['height'], $data['weight']);
     }
 
-    public function getMoves(int $count = 4, bool $random = false): array
+    public function getMoves(int $moveCount = 4, bool $random = false): array
     {
         $myMoves = $this->moves;
         if ($random) shuffle($myMoves);
 
-        return (array_slice($myMoves, 0, $count));
+        function parseArray($n)
+        {
+            return $n['move']['name'];
+        }
+        $newArray = (array_slice($myMoves, 0, $moveCount));
+        $newArray = array_map('parseArray', $newArray);
+        return $newArray;
     }
 
     public function getFrontSprite(): string
     {
-        return $this->sprites['front_default'];
+        return secureValue($this->sprites['front_default']);
     }
 
     public function getOfficialArtUrl(): string
     {
-        return $this->sprites['other']['official-artwork']['front_default'];
+        return secureValue($this->sprites['other']['official-artwork']['front_default']);
     }
 
     public function getEvolutionaryChain(): array
@@ -61,14 +69,28 @@ class Pokemon
         $data = file_get_contents($data['evolution_chain']['url']);
         $data = json_decode($data, true);
 
+        $chain = [[],[],[]];
         //$data now contains the full evolutionary chain data
         //next, begin parsing the array and figuring out whether there are evolutions
         if (count($data['chain']['evolves_to']) > 0) {
             //let's start putting all the data we need from the Json into a new array
-            $chain = [];
-            $chain[0] = [];
-            $chain[0][0] = new Pokemon($data["chain"]["species"]["name"]);
+            //BRUTE FORCE APPROACH
 
+            $chain[0][0] = Pokemon::fetchPokemon($data["chain"]["species"]["name"]);
+
+            foreach($data['chain']['evolves_to'] as $key=>$element){
+                array_push($chain[1], Pokemon::fetchPokemon($element['species']['name']));
+                foreach($data['chain']['evolves_to'][$key]['evolves_to'] as $otherElement){
+                    array_push($chain[2], Pokemon::fetchPokemon($otherElement['species']['name']));
+                }
+            }
+
+            //test if the chain is successful
+//            echo $chain[0][0]->name;
+//            echo ", ";
+//            echo $chain[1][0]->name;
+//            echo ", ";
+//            echo $chain[2][0]->name;
             return $chain;
         } //oh no, no evolutions
         else {
@@ -79,16 +101,12 @@ class Pokemon
 
 }
 
-function fetchPokemon($query): Pokemon
-{
-    $data = file_get_contents(POKEAPI_REF . '/pokemon/' . $query);
-    $data = json_decode($data, true);
-    $myPokemon = new Pokemon($data);
-//    unset($data);
-    return $myPokemon;
-}
-
-function secureValue($input) : string
+/**
+ * this function makes it so you don't have to do htmlSPecialChars ENT_NOQUOTES UTF-8 all the time.
+ * @param string $input
+ * @return string
+ */
+function secureValue(string $input) : string
 {
     return htmlSpecialChars($input, ENT_NOQUOTES, 'UTF-8');
 }
@@ -97,14 +115,23 @@ function secureValue($input) : string
 $pokeQuery = ($_GET["q"]);
 if(!empty($pokeQuery))
 {
+    //start validating input
+    //first, secure the input for the sake of safety and convenience
     $pokeQuery = secureValue($pokeQuery);
 
-    if ($idQuery = intval($pokeQuery)) {
+    //next
+    $idQuery = (int) $pokeQuery;
+    if ($idQuery != null) {
+
         $pokeQuery = max(1, min($idQuery, MAX_POKEMON));
     }
 
-    $currentPokemon = fetchPokemon($pokeQuery);
+    $currentPokemon = Pokemon::fetchPokemon($pokeQuery);
     $myMoves = $currentPokemon->getMoves(4, false);
+    $evolutionArray = $currentPokemon->getEvolutionaryChain();
+}
+else{
+    echo("no input");
 }
 
 
