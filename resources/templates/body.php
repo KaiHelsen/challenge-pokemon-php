@@ -1,5 +1,8 @@
 <?php
+$currentPokemon = null;
+$myMoves = null;
 include("./resources/library/pokeDex.php");
+
 ?>
 
 <div class="pokedex">
@@ -44,15 +47,15 @@ include("./resources/library/pokeDex.php");
                             </div>
                             <div class="screen__evolutions">
                                 <img src="<?php
-                                echo isset($evolutionArray[0]) ? $evolutionArray[0][0]->getFrontSprite() : ''; ?>"
+                                echo isset($evolutionArray[0][0]) ? $evolutionArray[0][0]->getFrontSprite() : ''; ?>"
                                      class="poke-front-sprite" alt="evolution_1" id="poke-display__img__sprite_stage1">
                                 <span class="poke-arrow" id="evo_arrow_1"> > </span>
                                 <img src="<?php
-                                echo isset($evolutionArray[1]) ? $evolutionArray[1][0]->getFrontSprite() : ''; ?>"
+                                echo isset($evolutionArray[1][0]) ? $evolutionArray[1][0]->getFrontSprite() : ''; ?>"
                                      class="poke-front-sprite" alt="evolution_1" id="poke-display__img__sprite_stage2">
                                 <span class="poke-arrow" id="evo_arrow_2"> > </span>
                                 <img src="<?php
-                                echo isset($evolutionArray[2]) ? $evolutionArray[2][0]->getFrontSprite() : ''; ?>"
+                                    echo isset($evolutionArray[2][0]) ? $evolutionArray[2][0]->getFrontSprite() : ''; ?>"
                                      class="poke-front-sprite" alt="evolution_1" id="poke-display__img__sprite_stage3">
                             </div>
                         </div>
@@ -92,12 +95,12 @@ include("./resources/library/pokeDex.php");
                 <label for="moves-table">Moves</label>
                 <table id="moves-table">
                     <tr>
-                        <td class="move"><?php echo $myMoves[0] ?></td>
-                        <td class="move"><?php echo $myMoves[1] ?></td>
+                        <td class="move"><?php echo isset($myMoves[0]) ? $myMoves[0] : ""; ?></td>
+                        <td class="move"><?php echo isset($myMoves[1]) ? $myMoves[1] : ""; ?></td>
                     </tr>
                     <tr>
-                        <td class="move"><?php echo $myMoves[2] ?></td>
-                        <td class="move"><?php echo $myMoves[3] ?></td>
+                        <td class="move"><?php echo isset($myMoves[2]) ? $myMoves[2] : ""; ?></td>
+                        <td class="move"><?php echo isset($myMoves[3]) ? $myMoves[3] : ""; ?></td>
                     </tr>
                 </table>
             </div>

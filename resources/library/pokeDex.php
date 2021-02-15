@@ -5,7 +5,7 @@
 const MAX_POKEMON = 898;
 const POKEAPI_REF = 'https://pokeapi.co/api/v2';
 
-$currentPokemon = null;
+
 $evolutionArray = null;
 
 
@@ -40,35 +40,43 @@ class Pokemon
 
     public function getMoves(int $moveCount = 4, bool $random = false): array
     {
+        //get all moves and, if random is true, shuffle the array
         $myMoves = $this->moves;
         if ($random) shuffle($myMoves);
-        if (count($myMoves) < $moveCount) {
-            for ($i = 0; i < $moveCount; $i++) {
-                if($myMoves[$i] == null){
-                    $myMoves[$i] = 'X';
-                }
 
+        //slice the array
+        $newArray = array_slice($myMoves, 0, $moveCount);
+        $newArray = array_map(function ($n)
+        {
+            return $n['move']['name'];
+        }, $newArray);
+
+        for ($i = 0; $i < $moveCount; $i++)
+        {
+            if (empty($myMoves[$i]))
+            {
+                $myMoves[$i] = 'X';
             }
         }
 
-        function parseArray($n)
-        {
-            return $n['move']['name'];
-        }
 
-        $newArray = array_slice($myMoves, 0, $moveCount);
-        $newArray = array_map('parseArray', $newArray);
         return $newArray;
     }
 
     public function getFrontSprite(): string
     {
-        return secureValue($this->sprites['front_default']);
+        if (!empty($this->sprites))
+        {
+            return secureValue($this->sprites['front_default']);
+        } else return "";
     }
 
     public function getOfficialArtUrl(): string
     {
-        return secureValue($this->sprites['other']['official-artwork']['front_default']);
+        if (!empty($this->sprites))
+        {
+            return secureValue($this->sprites['other']['official-artwork']['front_default']);
+        } else return "";
     }
 
     public function getEvolutionaryChain(): array
@@ -82,15 +90,18 @@ class Pokemon
         $chain = [[], [], []];
         //$data now contains the full evolutionary chain data
         //next, begin parsing the array and figuring out whether there are evolutions
-        if (count($data['chain']['evolves_to']) > 0) {
+        if (count($data['chain']['evolves_to']) > 0)
+        {
             //let's start putting all the data we need from the Json into a new array
             //BRUTE FORCE APPROACH
 
             $chain[0][0] = Pokemon::fetchPokemon($data["chain"]["species"]["name"]);
 
-            foreach ($data['chain']['evolves_to'] as $key => $element) {
+            foreach ($data['chain']['evolves_to'] as $key => $element)
+            {
                 array_push($chain[1], Pokemon::fetchPokemon($element['species']['name']));
-                foreach ($data['chain']['evolves_to'][$key]['evolves_to'] as $otherElement) {
+                foreach ($data['chain']['evolves_to'][$key]['evolves_to'] as $otherElement)
+                {
                     array_push($chain[2], Pokemon::fetchPokemon($otherElement['species']['name']));
                 }
             }
@@ -103,7 +114,8 @@ class Pokemon
 //            echo $chain[2][0]->name;
             return $chain;
         } //oh no, no evolutions
-        else {
+        else
+        {
             unset($data);
             return [];
         }
@@ -122,15 +134,18 @@ function secureValue(string $input): string
 }
 
 //get information from form
-$pokeQuery = ($_GET["q"]);
-if (!empty($pokeQuery)) {
+if (isset($_GET["q"]))
+{
+
+    $pokeQuery = ($_GET["q"]);
     //start validating input
     //first, secure the input for the sake of safety and convenience
     $pokeQuery = secureValue($pokeQuery);
 
     //next
     $idQuery = (int)$pokeQuery;
-    if ($idQuery != null) {
+    if ($idQuery != null)
+    {
 
         $pokeQuery = max(1, min($idQuery, MAX_POKEMON));
     }
@@ -138,9 +153,12 @@ if (!empty($pokeQuery)) {
     $currentPokemon = Pokemon::fetchPokemon($pokeQuery);
     $myMoves = $currentPokemon->getMoves(4, false);
     $evolutionArray = $currentPokemon->getEvolutionaryChain();
-} else {
-    echo("no input");
+} else
+{
+    $currentPokemon = new Pokemon();
+//    echo("no input");
 }
+
 
 
 
