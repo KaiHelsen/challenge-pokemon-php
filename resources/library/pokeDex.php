@@ -29,24 +29,34 @@ class Pokemon
         $this->height = $height;
         $this->weight = $weight;
     }
+
     static function fetchPokemon($query): Pokemon
     {
         $data = file_get_contents(POKEAPI_REF . '/pokemon/' . $query);
         $data = json_decode($data, true);
 
-        return new Pokemon($data['name'], $data['id'], $data['moves'],$data['sprites'], $data['height'], $data['weight']);
+        return new Pokemon($data['name'], $data['id'], $data['moves'], $data['sprites'], $data['height'], $data['weight']);
     }
 
     public function getMoves(int $moveCount = 4, bool $random = false): array
     {
         $myMoves = $this->moves;
         if ($random) shuffle($myMoves);
+        if (count($myMoves) < $moveCount) {
+            for ($i = 0; i < $moveCount; $i++) {
+                if($myMoves[$i] == null){
+                    $myMoves[$i] = 'X';
+                }
+
+            }
+        }
 
         function parseArray($n)
         {
             return $n['move']['name'];
         }
-        $newArray = (array_slice($myMoves, 0, $moveCount));
+
+        $newArray = array_slice($myMoves, 0, $moveCount);
         $newArray = array_map('parseArray', $newArray);
         return $newArray;
     }
@@ -69,7 +79,7 @@ class Pokemon
         $data = file_get_contents($data['evolution_chain']['url']);
         $data = json_decode($data, true);
 
-        $chain = [[],[],[]];
+        $chain = [[], [], []];
         //$data now contains the full evolutionary chain data
         //next, begin parsing the array and figuring out whether there are evolutions
         if (count($data['chain']['evolves_to']) > 0) {
@@ -78,9 +88,9 @@ class Pokemon
 
             $chain[0][0] = Pokemon::fetchPokemon($data["chain"]["species"]["name"]);
 
-            foreach($data['chain']['evolves_to'] as $key=>$element){
+            foreach ($data['chain']['evolves_to'] as $key => $element) {
                 array_push($chain[1], Pokemon::fetchPokemon($element['species']['name']));
-                foreach($data['chain']['evolves_to'][$key]['evolves_to'] as $otherElement){
+                foreach ($data['chain']['evolves_to'][$key]['evolves_to'] as $otherElement) {
                     array_push($chain[2], Pokemon::fetchPokemon($otherElement['species']['name']));
                 }
             }
@@ -106,21 +116,20 @@ class Pokemon
  * @param string $input
  * @return string
  */
-function secureValue(string $input) : string
+function secureValue(string $input): string
 {
     return htmlSpecialChars($input, ENT_NOQUOTES, 'UTF-8');
 }
 
 //get information from form
 $pokeQuery = ($_GET["q"]);
-if(!empty($pokeQuery))
-{
+if (!empty($pokeQuery)) {
     //start validating input
     //first, secure the input for the sake of safety and convenience
     $pokeQuery = secureValue($pokeQuery);
 
     //next
-    $idQuery = (int) $pokeQuery;
+    $idQuery = (int)$pokeQuery;
     if ($idQuery != null) {
 
         $pokeQuery = max(1, min($idQuery, MAX_POKEMON));
@@ -129,8 +138,7 @@ if(!empty($pokeQuery))
     $currentPokemon = Pokemon::fetchPokemon($pokeQuery);
     $myMoves = $currentPokemon->getMoves(4, false);
     $evolutionArray = $currentPokemon->getEvolutionaryChain();
-}
-else{
+} else {
     echo("no input");
 }
 
